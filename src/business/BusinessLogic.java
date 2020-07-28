@@ -104,8 +104,8 @@ public class BusinessLogic {
     }
 
     public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails){
-        System.out.println(order.toString());
-        System.out.println(orderDetails);
+//        System.out.println(order.toString());
+//        System.out.println(orderDetails);
         Connection connection = DBConnection.getInstance().getConnection();
         try {
             connection.setAutoCommit(false);

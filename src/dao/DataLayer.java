@@ -48,7 +48,7 @@ public class DataLayer {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT OrderID FROM `Orders` ORDER BY id DESC LIMIT 1");
+            ResultSet rst = stm.executeQuery("SELECT OrderID FROM Orders ORDER BY OrderID DESC LIMIT 1");
             if (rst.next()){
                 return rst.getString(1);
             }else{
