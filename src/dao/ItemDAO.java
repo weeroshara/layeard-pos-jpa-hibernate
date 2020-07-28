@@ -10,6 +10,22 @@ import java.util.List;
 
 public class ItemDAO {
 
+    public static String getLastItemCode(){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT ItemCode FROM Item ORDER BY ItemCode DESC LIMIT 1");
+            if (rst.next()){
+                return rst.getString(1);
+            }else{
+                return null;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<Item> findAllItems(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();

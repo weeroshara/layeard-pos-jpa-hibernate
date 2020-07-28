@@ -10,6 +10,22 @@ import java.util.List;
 
 public class OrdersDAO {
 
+    public static String getLastOrderId(){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT OrderID FROM Orders ORDER BY OrderID DESC LIMIT 1");
+            if (rst.next()){
+                return rst.getString(1);
+            }else{
+                return null;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<Orders> findAllOrders(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -78,7 +94,7 @@ public class OrdersDAO {
     public static boolean deleteOrder(String orderId){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Orders WHERE itemCode=?");
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Orders WHERE orderId=?");
             pstm.setObject(1, orderId);
             return pstm.executeUpdate() > 0;
         } catch (SQLException throwables) {

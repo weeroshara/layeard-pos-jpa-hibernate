@@ -273,21 +273,21 @@ public class PlaceOrderFormController {
         generateOrderId();
     }
 
-    private void updateStockQty(String itemCode, int qty) {
-        String sql = "UPDATE Item SET qtyOnHand=qtyOnHand - ? WHERE ItemCode=?";
-        try {
-            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement(sql);
-            pstm.setObject(1, qty);
-            pstm.setObject(2, itemCode);
-            int affectedRows = pstm.executeUpdate();
-            if (affectedRows == 0) {
-                new Alert(Alert.AlertType.ERROR, "Something went wrong while updating the stock", ButtonType.OK).show();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    private void updateStockQty(String itemCode, int qty) {
+//        String sql = "UPDATE Item SET qtyOnHand=qtyOnHand - ? WHERE ItemCode=?";
+//        try {
+//            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement(sql);
+//            pstm.setObject(1, qty);
+//            pstm.setObject(2, itemCode);
+//            int affectedRows = pstm.executeUpdate();
+//            if (affectedRows == 0) {
+//                new Alert(Alert.AlertType.ERROR, "Something went wrong while updating the stock", ButtonType.OK).show();
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     @FXML
     private void navigateToHome(MouseEvent event) throws IOException {
