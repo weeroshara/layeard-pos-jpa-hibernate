@@ -102,20 +102,7 @@ public class ManageCustomerFormController implements Initializable {
         List<CustomerTM> allCustomers = BusinessLogic.getAllCustomers();
         ObservableList<CustomerTM> customers = FXCollections.observableArrayList(allCustomers);
         tblCustomers.setItems(customers);
-//        try {
-//            ObservableList<CustomerTM> customers = tblCustomers.getItems();
-//            customers.clear();
-//            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-//            ResultSet rst = stm.executeQuery("SELECT * FROM Customer");
-//            while (rst.next()) {
-//                String id = rst.getString(1);
-//                String name = rst.getString(2);
-//                String address = rst.getString(3);
-//                customers.add(new CustomerTM(id, name, address));
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+
     }
 
     @FXML

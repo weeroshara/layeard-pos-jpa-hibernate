@@ -48,7 +48,7 @@ public class DataLayer {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT OrderID FROM `Orders` ORDER BY id DESC LIMIT 1q");
+            ResultSet rst = stm.executeQuery("SELECT OrderID FROM `Orders` ORDER BY id DESC LIMIT 1");
             if (rst.next()){
                 return rst.getString(1);
             }else{
@@ -179,59 +179,116 @@ public class DataLayer {
         }
     }
 
-    public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails){
-        Connection connection = DBConnection.getInstance().getConnection();
+//    public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails){
+//
+//        Connection connection = DBConnection.getInstance().getConnection();
+//        try {
+//            connection.setAutoCommit(false);
+//            PreparedStatement pstm = connection.prepareStatement("INSERT INTO `Orders` VALUES (?,?,?)");
+//            pstm.setObject(1, order.getOrderId());
+//            pstm.setObject(2, order.getOrderDate());
+//            pstm.setObject(3, order.getCustomerId());
+//            int affectedRows = pstm.executeUpdate();
+//
+//            if (affectedRows == 0) {
+//                connection.rollback();
+//                return false;
+//            }
+//
+//            for (OrderDetailTM orderDetail: orderDetails) {
+//                pstm = connection.prepareStatement("INSERT INTO OrderDetail VALUES (?,?,?,?)");
+//                pstm.setObject(1, order.getOrderId());
+//                pstm.setObject(1, orderDetail.getCode());
+//                pstm.setObject(1, orderDetail.getQty());
+//                pstm.setObject(1, orderDetail.getUnitPrice());
+//                affectedRows = pstm.executeUpdate();
+//
+//                if (affectedRows == 0){
+//                    connection.rollback();
+//                    return false;
+//                }
+//
+//                pstm = connection.prepareStatement("UPDATE Item SET qtyOnHand=qtyOnHand - ? WHERE ItemCode=?");
+//                pstm.setObject(1, orderDetail.getQty());
+//                affectedRows = pstm.executeUpdate();
+//
+//                if (affectedRows == 0){
+//                    connection.rollback();
+//                    return false;
+//                }
+//            }
+//            connection.commit();
+//            return true;
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//            try {
+//                connection.rollback();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            return false;
+//        } finally {
+//            try {
+//                connection.setAutoCommit(true);
+//            } catch (SQLException throwables) {
+//                throwables.printStackTrace();
+//            }
+//        }
+//    }
+
+    public static boolean saveOrder(OrderTM order){
         try {
-            connection.setAutoCommit(false);
+            Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO `Orders` VALUES (?,?,?)");
             pstm.setObject(1, order.getOrderId());
             pstm.setObject(2, order.getOrderDate());
             pstm.setObject(3, order.getCustomerId());
-            int affectedRows = pstm.executeUpdate();
+            return pstm.executeUpdate()> 0;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
 
-            if (affectedRows == 0) {
-                connection.rollback();
-                return false;
-            }
-
+    public static boolean saveOrderDetail(String orderId,List<OrderDetailTM> orderDetails){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement pstm = connection.prepareStatement("INSERT INTO `OrderDetail` VALUES (?,?,?,?)");
+            boolean result = false;
             for (OrderDetailTM orderDetail: orderDetails) {
-                pstm = connection.prepareStatement("INSERT INTO OrderDetail VALUES (?,?,?,?)");
-                pstm.setObject(1, order.getOrderId());
-                pstm.setObject(1, orderDetail.getCode());
-                pstm.setObject(1, orderDetail.getQty());
-                pstm.setObject(1, orderDetail.getUnitPrice());
-                affectedRows = pstm.executeUpdate();
-
-                if (affectedRows == 0){
-                    connection.rollback();
-                    return false;
-                }
-
-                pstm = connection.prepareStatement("UPDATE Item SET qtyOnHand=qtyOnHand - ? WHERE ItemCode=?");
-                pstm.setObject(1, orderDetail.getQty());;
-                affectedRows = pstm.executeUpdate();
-
-                if (affectedRows == 0){
-                    connection.rollback();
+                pstm.setObject(1, orderId);
+                pstm.setObject(2, orderDetail.getCode());
+                pstm.setObject(3, orderDetail.getQty());
+                pstm.setObject(4, orderDetail.getUnitPrice());
+                result =  pstm.executeUpdate()> 0;
+                if (!result){
                     return false;
                 }
             }
-            connection.commit();
             return true;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
             return false;
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+        }
+    }
+
+    public static boolean updateQuantity(List<OrderDetailTM> orderDetails){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET qtyOnHand=qtyOnHand-? WHERE itemCode=?");
+            boolean result = false;
+            for (OrderDetailTM orderDetail: orderDetails) {
+                pstm.setObject(1, orderDetail.getQty());
+                pstm.setObject(2, orderDetail.getCode());
+                result =  pstm.executeUpdate()> 0;
+                if (!result){
+                    return false;
+                }
             }
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
         }
     }
 

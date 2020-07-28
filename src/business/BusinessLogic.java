@@ -1,11 +1,14 @@
 package business;
 
 import dao.DataLayer;
+import db.DBConnection;
 import util.CustomerTM;
 import util.ItemTM;
 import util.OrderDetailTM;
 import util.OrderTM;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class BusinessLogic {
@@ -52,17 +55,17 @@ public class BusinessLogic {
     public static String getNewOrderId(){
         String lastOrderId = DataLayer.getLastOrderId();
         if (lastOrderId == null){
-            return "OD001";
+            return "D001";
         }else{
-            int maxId=  Integer.parseInt(lastOrderId.replace("OD",""));
+            int maxId=  Integer.parseInt(lastOrderId.replace("D",""));
             maxId = maxId + 1;
             String id = "";
             if (maxId < 10) {
-                id = "OD00" + maxId;
+                id = "D00" + maxId;
             } else if (maxId < 100) {
-                id = "OD0" + maxId;
+                id = "D0" + maxId;
             } else {
-                id = "OD" + maxId;
+                id = "D" + maxId;
             }
             return id;
         }
@@ -101,6 +104,48 @@ public class BusinessLogic {
     }
 
     public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails){
-        return DataLayer.placeOrder(order, orderDetails);
+        System.out.println(order.toString());
+        System.out.println(orderDetails);
+        Connection connection = DBConnection.getInstance().getConnection();
+        try {
+            connection.setAutoCommit(false);
+
+            boolean result = DataLayer.saveOrder(order);
+            if (!result){
+                connection.rollback();
+                return false;
+            }
+
+            result = DataLayer.saveOrderDetail(order.getOrderId(),orderDetails);
+            if (!result){
+                connection.rollback();
+                return false;
+            }
+
+            result = DataLayer.updateQuantity(orderDetails);
+            if (!result){
+                connection.rollback();
+                return false;
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
     }
+
 }
