@@ -1,39 +1,26 @@
 package entity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class OrderDetail {
 
-    private String orderId;
-    private String itemCode;
-    private Integer orderQty;
+    private OrderDetailPK orderDetailPK;
+    private int orderQty;
     private BigDecimal unitPrice;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(String orderId, String itemCode, Integer orderQty, BigDecimal unitPrice) {
-        this.orderId = orderId;
-        this.itemCode = itemCode;
+    public OrderDetail(OrderDetailPK orderDetailPK, int orderQty, BigDecimal unitPrice) {
+        this.orderDetailPK = orderDetailPK;
         this.orderQty = orderQty;
         this.unitPrice = unitPrice;
     }
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getItemCode() {
-        return itemCode;
-    }
-
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
+    public OrderDetail(String orderId, String itemCode,int orderQty, BigDecimal unitPrice) {
+        this.orderDetailPK = new OrderDetailPK(orderId,itemCode);
+        this.orderQty = orderQty;
+        this.unitPrice = unitPrice;
     }
 
     public Integer getOrderQty() {
@@ -52,13 +39,22 @@ public class OrderDetail {
         this.unitPrice = unitPrice;
     }
 
+
+
+    public OrderDetailPK getOrderDetailPK() {
+        return orderDetailPK;
+    }
+
     @Override
     public String toString() {
         return "OrderDetail{" +
-                "orderId='" + orderId + '\'' +
-                ", itemCode='" + itemCode + '\'' +
+                "orderDetailPK=" + orderDetailPK +
                 ", orderQty=" + orderQty +
                 ", unitPrice=" + unitPrice +
                 '}';
+    }
+
+    public void setOrderDetailPK(OrderDetailPK orderDetailPK) {
+        this.orderDetailPK = orderDetailPK;
     }
 }
