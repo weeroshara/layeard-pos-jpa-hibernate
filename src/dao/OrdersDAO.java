@@ -10,7 +10,7 @@ import java.util.List;
 
 public class OrdersDAO {
 
-    public static String getLastOrderId(){
+    public String getLastOrderId(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
@@ -26,7 +26,7 @@ public class OrdersDAO {
         }
     }
 
-    public static List<Orders> findAllOrders(){
+    public List<Orders> findAllOrders(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
@@ -45,7 +45,7 @@ public class OrdersDAO {
 
     }
 
-    public static Orders findOrder(String orderId){
+    public Orders findOrder(String orderId){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Orders WHERE orderId=?");
@@ -63,7 +63,7 @@ public class OrdersDAO {
         }
     }
 
-    public static boolean saveOrder(Orders orders){
+    public boolean saveOrder(Orders orders){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO Orders VALUES (?,?,?)");
@@ -77,7 +77,7 @@ public class OrdersDAO {
         }
     }
 
-    public static boolean updateOrder(Orders orders){
+    public boolean updateOrder(Orders orders){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("UPDATE Orders SET orderDate=?, customerId=? WHERE orderId=?");
@@ -91,7 +91,7 @@ public class OrdersDAO {
         }
     }
 
-    public static boolean deleteOrder(String orderId){
+    public boolean deleteOrder(String orderId){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Orders WHERE orderId=?");

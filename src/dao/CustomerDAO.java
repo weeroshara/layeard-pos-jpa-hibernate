@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerDAO {
-    public static String getLastCustomerId(){
+    public String getLastCustomerId(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
@@ -24,7 +24,7 @@ public class CustomerDAO {
         }
     }
 
-    public static List<Customer> findAllCustomers(){
+    public List<Customer> findAllCustomers(){
         Connection connection = DBConnection.getInstance().getConnection();
 
         try {
@@ -42,7 +42,7 @@ public class CustomerDAO {
 
     }
 
-    public static Customer findCustomer(String customerId){
+    public Customer findCustomer(String customerId){
         Connection connection = DBConnection.getInstance().getConnection();
 
         try {
@@ -60,7 +60,7 @@ public class CustomerDAO {
 
     }
 
-    public static boolean saveCustomer(Customer customer){
+    public boolean saveCustomer(Customer customer){
 
         Connection connection = DBConnection.getInstance().getConnection();
 
@@ -78,7 +78,7 @@ public class CustomerDAO {
 
     }
 
-    public static boolean updateCustomer(Customer customer){
+    public boolean updateCustomer(Customer customer){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET customerName=?, customerAddress=? WHERE customerId=?");
@@ -93,7 +93,7 @@ public class CustomerDAO {
 
     }
 
-    public static boolean deleteCustomer(String customerId){
+    public boolean deleteCustomer(String customerId){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE customerId=?");
