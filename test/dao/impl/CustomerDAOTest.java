@@ -1,18 +1,14 @@
-package dao;
-
-import entity.Customer;
-
-import java.util.List;
+package dao.impl;
 
 public class CustomerDAOTest {
 
     public static void main(String[] args) {
-//        List<Customer> allCustomers = CustomerDAO.findAllCustomers();
+//        List<Customer> allCustomers = CustomerDAOImpl.findAllCustomers();
 //        for (Customer customer: allCustomers) {
 //            System.out.println(customer);
 
 //        assert false:"Pissu double";
-        assert CustomerDAO.findAllCustomers().size() ==6;
+       // assert CustomerDAOImpl.findAllCustomers().size() ==6;
         }
     }
 
