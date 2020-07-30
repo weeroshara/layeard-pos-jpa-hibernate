@@ -4,7 +4,7 @@ import entity.Customer;
 
 import java.util.List;
 
-public interface CustomerDAO extends SuperDAO{
-    public String getLastCustomerId();
+public interface CustomerDAO extends SuperDAO<Customer,String>{
+     String getLastCustomerId();
 
 }

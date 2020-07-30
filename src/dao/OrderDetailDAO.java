@@ -5,6 +5,7 @@ import entity.OrderDetailPK;
 
 import java.util.List;
 
-public interface OrderDetailDAO extends SuperDAO{
+public interface OrderDetailDAO extends SuperDAO<OrderDetail,OrderDetailPK>{
+
 
 }

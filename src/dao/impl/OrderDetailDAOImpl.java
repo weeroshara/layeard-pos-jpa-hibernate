@@ -13,12 +13,13 @@ import java.util.List;
 
 public class OrderDetailDAOImpl implements OrderDetailDAO {
 
-    public List<Object> findAll(){
+    @Override
+    public List<OrderDetail> findAll() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
             ResultSet rst = stm.executeQuery("SELECT * FROM OrderDetail");
-            List<Object> orderDetails = new ArrayList<>();
+            List<OrderDetail> orderDetails = new ArrayList<>();
             while (rst.next()) {
                 orderDetails.add(new OrderDetail(rst.getString(1),
                         rst.getString(2),
@@ -32,7 +33,8 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public Object find(Object compositeKey){
+    @Override
+    public OrderDetail find(OrderDetailPK key) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM OrderDetail WHERE orderId=? AND itemCode=?");
@@ -53,11 +55,12 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public boolean save(Object entity){
+    @Override
+    public boolean save(OrderDetail entity) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO OrderDetail VALUES (?,?,?,?)");
-            OrderDetail orderDetail = (OrderDetail) entity;
+            OrderDetail orderDetail = entity;
             pstm.setObject(1, orderDetail.getOrderDetailPK().getOrderId());
             pstm.setObject(2, orderDetail.getOrderDetailPK().getItemCode());
             pstm.setObject(3, orderDetail.getOrderQty());
@@ -69,11 +72,12 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public boolean update(Object entity){
+    @Override
+    public boolean update(OrderDetail entity) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("UPDATE OrderDetail SET orderQty=?, unitPrice=? WHERE orderId=? AND itemCode=?");
-            OrderDetail orderDetail = (OrderDetail) entity;
+            OrderDetail orderDetail = entity;
             pstm.setObject(3, orderDetail.getOrderDetailPK().getOrderId());
             pstm.setObject(4, orderDetail.getOrderDetailPK().getItemCode());
             pstm.setObject(1, orderDetail.getOrderQty());
@@ -85,7 +89,8 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public boolean delete(Object compositeKey){
+    @Override
+    public boolean delete(OrderDetailPK key) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.
