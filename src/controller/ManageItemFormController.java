@@ -5,9 +5,11 @@
  */
 package controller;
 
-import business.BusinessLogic;
+import business.BOFactory;
+import business.BOType;
+import business.custom.ItemBO;
 import com.jfoenix.controls.JFXTextField;
-import db.DBConnection;
+import dao.custom.ItemDAO;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -30,10 +32,6 @@ import util.ItemTM;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -56,6 +54,8 @@ public class ManageItemFormController implements Initializable {
     @FXML
     private AnchorPane root;
 
+    ItemBO itemBO = BOFactory.getInstance().getBO(BOType.ITEM);
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         tblItems.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -70,7 +70,11 @@ public class ManageItemFormController implements Initializable {
         btnDelete.setDisable(true);
         btnSave.setDisable(true);
 
-        loadAllItems();
+        try {
+            loadAllItems();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tblItems.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ItemTM>() {
             @Override
@@ -102,10 +106,10 @@ public class ManageItemFormController implements Initializable {
         });
     }
 
-    private void loadAllItems() {
+    private void loadAllItems() throws Exception {
         ObservableList<ItemTM> items = tblItems.getItems();
         items.clear();
-        items = FXCollections.observableArrayList(BusinessLogic.getAllItems());
+        items = FXCollections.observableArrayList(itemBO.getAllItems());
         tblItems.setItems(items);
     }
 
@@ -120,7 +124,7 @@ public class ManageItemFormController implements Initializable {
     }
 
     @FXML
-    private void btnSave_OnAction(ActionEvent event) {
+    private void btnSave_OnAction(ActionEvent event) throws Exception {
 
 
         if (txtDescription.getText().trim().isEmpty() ||
@@ -140,7 +144,7 @@ public class ManageItemFormController implements Initializable {
 
         if (btnSave.getText().equals("Save")) {
 
-            boolean result = BusinessLogic.saveItem(txtCode.getText(), txtDescription.getText(), qtyOnHand, unitPrice);
+            boolean result = itemBO.saveItem(txtCode.getText(), txtDescription.getText(), qtyOnHand, unitPrice);
             if (!result){
                 new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
             }
@@ -148,7 +152,7 @@ public class ManageItemFormController implements Initializable {
         } else {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
 
-            boolean result = BusinessLogic.updateItem(txtDescription.getText(),  qtyOnHand, unitPrice, selectedItem.getCode());
+            boolean result = itemBO.updateItem(txtDescription.getText(),  qtyOnHand, unitPrice, selectedItem.getCode());
             if (!result) {
                 new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
             }
@@ -159,14 +163,14 @@ public class ManageItemFormController implements Initializable {
     }
 
     @FXML
-    private void btnDelete_OnAction(ActionEvent event) {
+    private void btnDelete_OnAction(ActionEvent event) throws Exception {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Are you sure whether you want to delete this item?",
                 ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> buttonType = alert.showAndWait();
         if (buttonType.get() == ButtonType.YES) {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-            boolean result = BusinessLogic.deleteItem(selectedItem.getCode());
+            boolean result = itemBO.deleteItem(selectedItem.getCode());
             if (!result){
                 new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
             }else{
@@ -177,7 +181,7 @@ public class ManageItemFormController implements Initializable {
     }
 
     @FXML
-    private void btnAddNew_OnAction(ActionEvent actionEvent) {
+    private void btnAddNew_OnAction(ActionEvent actionEvent) throws Exception {
         txtCode.clear();
         txtDescription.clear();
         txtQtyOnHand.clear();
@@ -190,7 +194,7 @@ public class ManageItemFormController implements Initializable {
         btnSave.setDisable(false);
 
         // Generate a new id
-        txtCode.setText(BusinessLogic.getNewItemCode());
+        txtCode.setText(itemBO.getNewItemCode());
 
 
     }

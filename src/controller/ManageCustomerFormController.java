@@ -5,8 +5,13 @@
  */
 package controller;
 
-import business.BusinessLogic;
-import db.DBConnection;
+import business.BOFactory;
+import business.BOType;
+import business.custom.CustomerBO;
+import dao.DAOFactory;
+import dao.DAOType;
+import dao.custom.CustomerDAO;
+import entity.Customer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,10 +31,6 @@ import util.CustomerTM;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -57,8 +58,11 @@ public class ManageCustomerFormController implements Initializable {
     @FXML
     private TableView<CustomerTM> tblCustomers;
 
+    CustomerBO customerBO= BOFactory.getInstance().getBO(BOType.CUSTOMER);
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         tblCustomers.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
         tblCustomers.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("name"));
         tblCustomers.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -69,7 +73,11 @@ public class ManageCustomerFormController implements Initializable {
         btnDelete.setDisable(true);
         btnSave.setDisable(true);
 
-        loadAllCustomers();
+        try {
+            loadAllCustomers();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tblCustomers.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CustomerTM>() {
             @Override
@@ -97,9 +105,9 @@ public class ManageCustomerFormController implements Initializable {
         });
     }
 
-    private void loadAllCustomers() {
+    private void loadAllCustomers() throws Exception {
         tblCustomers.getItems().clear();
-        List<CustomerTM> allCustomers = BusinessLogic.getAllCustomers();
+        List<CustomerTM> allCustomers = customerBO.getAllCustomers();
         ObservableList<CustomerTM> customers = FXCollections.observableArrayList(allCustomers);
         tblCustomers.setItems(customers);
 
@@ -116,7 +124,7 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     @FXML
-    private void btnSave_OnAction(ActionEvent event) {
+    private void btnSave_OnAction(ActionEvent event) throws Exception {
         String name = txtCustomerName.getText();
         String address = txtCustomerAddress.getText();
 
@@ -128,13 +136,13 @@ public class ManageCustomerFormController implements Initializable {
 
         if (btnSave.getText().equals("Save")) {
 
-            BusinessLogic.saveCustomer(txtCustomerId.getText(),
+            customerBO.saveCustomer(txtCustomerId.getText(),
                     txtCustomerName.getText(),
                     txtCustomerAddress.getText());
             btnAddNew_OnAction(event);
         } else {
             CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
-            boolean result = BusinessLogic.updateCustomer(txtCustomerName.getText(), txtCustomerAddress.getText(), selectedItem.getId());
+            boolean result = customerBO.updateCustomer( selectedItem.getId(), txtCustomerName.getText(), txtCustomerAddress.getText());
             if (!result) {
                 new Alert(Alert.AlertType.ERROR, "Failed to update the customer", ButtonType.OK).show();
             }
@@ -145,7 +153,7 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     @FXML
-    private void btnDelete_OnAction(ActionEvent event) {
+    private void btnDelete_OnAction(ActionEvent event) throws Exception {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Are you sure whether you want to delete this customer?",
                 ButtonType.YES, ButtonType.NO);
@@ -153,7 +161,7 @@ public class ManageCustomerFormController implements Initializable {
         if (buttonType.get() == ButtonType.YES) {
             CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
 
-            boolean result = BusinessLogic.deleteCustomer(selectedItem.getId());
+            boolean result = customerBO.deleteCustomer(selectedItem.getId());
             if (!result){
                 new Alert(Alert.AlertType.ERROR, "Failed to delete the customer", ButtonType.OK).show();
             }else{
@@ -164,7 +172,7 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     @FXML
-    private void btnAddNew_OnAction(ActionEvent actionEvent) {
+    private void btnAddNew_OnAction(ActionEvent actionEvent) throws Exception {
         txtCustomerId.clear();
         txtCustomerName.clear();
         txtCustomerAddress.clear();
@@ -175,7 +183,7 @@ public class ManageCustomerFormController implements Initializable {
         btnSave.setDisable(false);
 
         // Generate a new id
-        txtCustomerId.setText(BusinessLogic.getNewCustomerId());
+        txtCustomerId.setText(customerBO.getNewCustomerId());
 
     }
 

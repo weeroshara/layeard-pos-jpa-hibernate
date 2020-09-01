@@ -1,10 +1,13 @@
 package controller;
 
-import business.BusinessLogic;
+import business.BOFactory;
+import business.BOType;
+import business.custom.CustomerBO;
+import business.custom.ItemBO;
+import business.custom.OrderBO;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import db.DBConnection;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,10 +28,6 @@ import util.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,7 +52,13 @@ public class PlaceOrderFormController {
     public TableView<OrderDetailTM> tblOrderDetails;
     private boolean readOnly;
 
-    public void initialize() {
+
+    CustomerBO customerBO= BOFactory.getInstance().getBO(BOType.CUSTOMER);
+    ItemBO itemBO=BOFactory.getInstance().getBO(BOType.ITEM);
+    OrderBO orderBO=BOFactory.getInstance().getBO(BOType.ORDER);
+
+
+    public void initialize() throws Exception {
 
         readOnly = false;
 
@@ -150,14 +155,14 @@ public class PlaceOrderFormController {
         generateOrderId();
     }
 
-    private void loadAllItems() {
+    private void loadAllItems() throws Exception {
         cmbItemCode.getItems().clear();
-        cmbItemCode.setItems(FXCollections.observableArrayList(BusinessLogic.getAllItems()));
+        cmbItemCode.setItems(FXCollections.observableArrayList(itemBO.getAllItems()));
     }
 
-    private void loadAllCustomers() {
+    private void loadAllCustomers() throws Exception {
         cmbCustomerId.getItems().clear();
-        cmbCustomerId.setItems(FXCollections.observableArrayList(BusinessLogic.getAllCustomers()));
+        cmbCustomerId.setItems(FXCollections.observableArrayList(customerBO.getAllCustomers()));
     }
 
     private void calculateQtyOnHand(ItemTM item) {
@@ -243,7 +248,7 @@ public class PlaceOrderFormController {
         }
     }
 
-    public void btnPlaceOrder_OnAction(ActionEvent actionEvent) {
+    public void btnPlaceOrder_OnAction(ActionEvent actionEvent) throws Exception {
         // Validation
         if (cmbCustomerId.getSelectionModel().getSelectedIndex() == -1) {
             new Alert(Alert.AlertType.ERROR, "You need to select a customer", ButtonType.OK).show();
@@ -257,7 +262,7 @@ public class PlaceOrderFormController {
             return;
         }
 
-        boolean result = BusinessLogic.placeOrder(new OrderTM(lblId.getText(), LocalDate.now(), cmbCustomerId.getValue().getId(), cmbCustomerId.getValue().getName(),0),tblOrderDetails.getItems());
+        boolean result = orderBO.placeOrder(new OrderTM(lblId.getText(), LocalDate.now(), cmbCustomerId.getValue().getId(), cmbCustomerId.getValue().getName(),0),tblOrderDetails.getItems());
         if (!result){
             new Alert(Alert.AlertType.ERROR, "Mudalali wade awul wage", ButtonType.OK).show();
             return;
@@ -317,9 +322,9 @@ public class PlaceOrderFormController {
         lblTotal.setText("Total: " + formattedText);
     }
 
-    private void generateOrderId() {
+    private void generateOrderId() throws Exception {
         // Generate a new id
-        lblId.setText(BusinessLogic.getNewOrderId());
+        lblId.setText(orderBO.getNewOrderId());
     }
 
     void initializeWithSearchOrderForm(String orderId) {
