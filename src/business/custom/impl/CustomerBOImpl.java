@@ -4,7 +4,10 @@ import business.custom.CustomerBO;
 import dao.DAOFactory;
 import dao.DAOType;
 import dao.custom.CustomerDAO;
+import db.HibernateUtil;
 import entity.Customer;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import util.CustomerTM;
 
 import java.util.ArrayList;
@@ -16,29 +19,124 @@ public class CustomerBOImpl implements CustomerBO {
     private CustomerDAO customerDAO = DAOFactory.getInstance().getDAO(DAOType.CUSTOMER);
 
     public List<CustomerTM> getAllCustomers() throws Exception {
-        List<Customer> allCustomers = customerDAO.findAll();
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        customerDAO.setSession(session);
+
+        Transaction tx=null;
         List<CustomerTM> customers = new ArrayList<>();
-        for (Customer customer : allCustomers) {
-            customers.add(new CustomerTM(customer.getCustomerId(), customer.getCustomerName(), customer.getCustomerAddress()));
+        try {
+            tx = session.beginTransaction();
+
+            List<Customer> allCustomers = customerDAO.findAll();
+
+            for (Customer customer : allCustomers) {
+                customers.add(new CustomerTM(customer.getCustomerId(), customer.getCustomerName(), customer.getCustomerAddress()));
+            }
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+        }finally {
+            session.close();
         }
         return customers;
+
+
+//        List<Customer> allCustomers = customerDAO.findAll();
+//        List<CustomerTM> customers = new ArrayList<>();
+//        for (Customer customer : allCustomers) {
+//            customers.add(new CustomerTM(customer.getCustomerId(), customer.getCustomerName(), customer.getCustomerAddress()));
+//        }
+//        return customers;
     }
 
-    public boolean saveCustomer(String id, String name, String address) throws Exception {
-        return customerDAO.save(new Customer(id, name, address));
+    public void saveCustomer(String id, String name, String address) throws Exception {
+//        return customerDAO.save(new Customer(id, name, address));
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        customerDAO.setSession(session);
+
+        Transaction tx=null;
+        try {
+            tx = session.beginTransaction();
+
+            customerDAO.save(new Customer(id, name, address));
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+        }finally {
+            session.close();
+        }
     }
 
-    public boolean deleteCustomer(String customerId) throws Exception {
-        return customerDAO.delete(customerId);
+    public void deleteCustomer(String customerId) throws Exception {
+//        return customerDAO.delete(customerId);
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        customerDAO.setSession(session);
+
+        Transaction tx=null;
+        try {
+            tx = session.beginTransaction();
+
+            customerDAO.delete(customerId);
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+        }finally {
+            session.close();
+        }
     }
 
-    public boolean updateCustomer(String name, String address, String customerId) throws Exception {
-        return customerDAO.update(new Customer(customerId, name, address));
+    public void updateCustomer(String name, String address, String customerId) throws Exception {
+//        return customerDAO.update(new Customer(customerId, name, address));
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        customerDAO.setSession(session);
+
+        Transaction tx=null;
+        try {
+            tx = session.beginTransaction();
+
+            customerDAO.update(new Customer(customerId, name, address));
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+        }finally {
+            session.close();
+        }
 
     }
 
     public String getNewCustomerId() throws Exception {
-        String lastCustomerId = customerDAO.getLastCustomerId();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        customerDAO.setSession(session);
+
+        Transaction tx=null;
+        String lastCustomerId =null;
+        try {
+            tx=session.beginTransaction();
+
+            lastCustomerId = customerDAO.getLastCustomerId();
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+
+        }finally {
+            session.close();
+        }
+
+
+
 
         if (lastCustomerId == null) {
             return "C001";
@@ -55,6 +153,7 @@ public class CustomerBOImpl implements CustomerBO {
             }
             return id;
         }
+
     }
 
 }

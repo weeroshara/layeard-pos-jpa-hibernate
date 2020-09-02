@@ -141,13 +141,13 @@ public class ManageCustomerFormController implements Initializable {
                     txtCustomerAddress.getText());
             btnAddNew_OnAction(event);
         } else {
-            CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
-            boolean result = customerBO.updateCustomer( selectedItem.getId(), txtCustomerName.getText(), txtCustomerAddress.getText());
-            if (!result) {
-                new Alert(Alert.AlertType.ERROR, "Failed to update the customer", ButtonType.OK).show();
-            }
-            tblCustomers.refresh();
-            btnAddNew_OnAction(event);
+//            CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
+//            boolean result = customerBO.updateCustomer( selectedItem.getId(), txtCustomerName.getText(), txtCustomerAddress.getText());
+//            if (!result) {
+//                new Alert(Alert.AlertType.ERROR, "Failed to update the customer", ButtonType.OK).show();
+//            }
+//            tblCustomers.refresh();
+//            btnAddNew_OnAction(event);
         }
         loadAllCustomers();
     }
@@ -161,13 +161,13 @@ public class ManageCustomerFormController implements Initializable {
         if (buttonType.get() == ButtonType.YES) {
             CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
 
-            boolean result = customerBO.deleteCustomer(selectedItem.getId());
-            if (!result){
-                new Alert(Alert.AlertType.ERROR, "Failed to delete the customer", ButtonType.OK).show();
-            }else{
-                tblCustomers.getItems().remove(selectedItem);
-                tblCustomers.getSelectionModel().clearSelection();
-            }
+//            boolean result = customerBO.deleteCustomer(selectedItem.getId());
+//            if (!result){
+//                new Alert(Alert.AlertType.ERROR, "Failed to delete the customer", ButtonType.OK).show();
+//            }else{
+//                tblCustomers.getItems().remove(selectedItem);
+//                tblCustomers.getSelectionModel().clearSelection();
+//            }
         }
     }
 

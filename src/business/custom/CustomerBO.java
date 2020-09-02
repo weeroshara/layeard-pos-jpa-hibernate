@@ -9,11 +9,11 @@ public interface CustomerBO extends SuperBO {
 
     public List<CustomerTM> getAllCustomers() throws Exception;
 
-    public boolean saveCustomer(String id, String name, String address)throws Exception;
+    public void saveCustomer(String id, String name, String address)throws Exception;
 
-    public boolean deleteCustomer(String customerId)throws Exception;
+    public void deleteCustomer(String customerId)throws Exception;
 
-    public boolean updateCustomer(String name, String address, String customerId)throws Exception;
+    public void updateCustomer(String name, String address, String customerId)throws Exception;
 
     public String getNewCustomerId()throws Exception;
 }

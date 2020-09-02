@@ -13,11 +13,11 @@ public class AppInitializer extends Application {
 
     public static void main(String[] args) {
         launch(args);
-        try {
-            DBConnection.getInstance().getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            DBConnection.getInstance().getConnection().close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

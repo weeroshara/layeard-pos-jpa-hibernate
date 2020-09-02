@@ -144,18 +144,18 @@ public class ManageItemFormController implements Initializable {
 
         if (btnSave.getText().equals("Save")) {
 
-            boolean result = itemBO.saveItem(txtCode.getText(), txtDescription.getText(), qtyOnHand, unitPrice);
-            if (!result){
-                new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
-            }
+            itemBO.saveItem(txtCode.getText(), txtDescription.getText(), qtyOnHand, unitPrice);
+//            if (!result){
+//                new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
+//            }
             btnAddNew_OnAction(event);
         } else {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
 
-            boolean result = itemBO.updateItem(txtDescription.getText(),  qtyOnHand, unitPrice, selectedItem.getCode());
-            if (!result) {
-                new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
-            }
+            itemBO.updateItem(txtDescription.getText(),  qtyOnHand, unitPrice, selectedItem.getCode());
+//            if (!result) {
+//                new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
+//            }
             tblItems.refresh();
             btnAddNew_OnAction(event);
         }
@@ -170,13 +170,13 @@ public class ManageItemFormController implements Initializable {
         Optional<ButtonType> buttonType = alert.showAndWait();
         if (buttonType.get() == ButtonType.YES) {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-            boolean result = itemBO.deleteItem(selectedItem.getCode());
-            if (!result){
-                new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
-            }else{
+            itemBO.deleteItem(selectedItem.getCode());
+//            if (!result){
+//                new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
+//            }else{
                 tblItems.getItems().remove(selectedItem);
                 tblItems.getSelectionModel().clearSelection();
-            }
+//            }
         }
     }
 

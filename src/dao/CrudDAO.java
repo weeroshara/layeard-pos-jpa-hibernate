@@ -11,9 +11,9 @@ public interface CrudDAO <T extends SuperEntity,ID extends Serializable> extends
 
     T find(ID key) throws Exception;
 
-    boolean save(T entity) throws Exception;
+    void save(T entity) throws Exception;
 
-    boolean update(T entity) throws Exception;
+    void update(T entity) throws Exception;
 
-    boolean delete(ID key) throws Exception;
+    void delete(ID key) throws Exception;
 }

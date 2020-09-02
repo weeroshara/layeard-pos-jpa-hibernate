@@ -8,10 +8,12 @@ import dao.custom.OrderDetailDAO;
 import dao.custom.OrdersDAO;
 import dao.custom.impl.ItemDAOImpl;
 import db.DBConnection;
+import db.HibernateUtil;
 import entity.Item;
-import entity.Order;
 import entity.OrderDetail;
 import entity.Orders;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import util.OrderDetailTM;
 import util.OrderTM;
 
@@ -40,7 +42,25 @@ public class OrderBOImpl implements OrderBO { // , Temp
 
     public String getNewOrderId() throws Exception {
 
-        String lastOrderId = orderDAO.getLastOrderId();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        orderDAO.setSession(session);
+        Transaction tx=null;
+
+        String lastOrderId=null;
+        try {
+            tx=session.beginTransaction();
+
+            lastOrderId = orderDAO.getLastOrderId();
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+        }finally {
+            session.clear();
+        }
+
+
 
         if (lastOrderId == null) {
             return "OD001";
@@ -59,50 +79,74 @@ public class OrderBOImpl implements OrderBO { // , Temp
         }
     }
 
-    public boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails) throws Exception {
+    public void placeOrder(OrderTM order, List<OrderDetailTM> orderDetails) throws Exception {
         Connection connection = DBConnection.getInstance().getConnection();
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        orderDAO.setSession(session);
+        orderDetailDAO.setSession(session);
+        itemDAO.setSession(session);
+
+        Transaction tx=null;
+
         try {
-            connection.setAutoCommit(false);
-            boolean result = orderDAO.save(new Orders(order.getOrderId(),
+            tx=session.beginTransaction();
+
+            orderDAO.save(new Orders(order.getOrderId(),
                     Date.valueOf(order.getOrderDate()),
                     order.getCustomerId()));
-            if (!result) {
-                connection.rollback();
-                return false;
-            }
+
             for (OrderDetailTM orderDetail : orderDetails) {
-                result = orderDetailDAO.save(new OrderDetail(
+                orderDetailDAO.save(new OrderDetail(
                         order.getOrderId(), orderDetail.getCode(),
-                        orderDetail.getQty(), BigDecimal.valueOf(orderDetail.getUnitPrice())
+                    orderDetail.getQty(), BigDecimal.valueOf(orderDetail.getUnitPrice())
                 ));
-                if (!result) {
-                    connection.rollback();
-                    return false;
-                }
                 Item item = itemDAO.find(orderDetail.getCode());
                 item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
-                result = new ItemDAOImpl().update(item);
-                if (!result) {
-                    connection.rollback();
-                    return false;
-                }
+                itemDAO.update(item);
+//                new ItemDAOImpl().update(item);
             }
-            connection.commit();
-            return true;
-        } catch (Throwable throwables) {
-            throwables.printStackTrace();
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return false;
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
+
+            tx.commit();
+        }catch (Throwable th){
+            th.printStackTrace();
+            tx.rollback();
+        }finally {
+            session.clear();
         }
+
+//        try {
+//            connection.setAutoCommit(false);
+//            orderDAO.save(new Orders(order.getOrderId(),
+//                    Date.valueOf(order.getOrderDate()),
+//                    order.getCustomerId()));
+//            for (OrderDetailTM orderDetail : orderDetails) {
+//                orderDetailDAO.save(new OrderDetail(
+//                        order.getOrderId(), orderDetail.getCode(),
+//                        orderDetail.getQty(), BigDecimal.valueOf(orderDetail.getUnitPrice())
+//                ));
+//
+//                Item item = itemDAO.find(orderDetail.getCode());
+//                item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
+//                new ItemDAOImpl().update(item);
+//
+//            }
+//            connection.commit();
+//            return true;
+//        } catch (Throwable throwables) {
+//            throwables.printStackTrace();
+//            try {
+//                connection.rollback();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            return false;
+//        } finally {
+//            try {
+//                connection.setAutoCommit(true);
+//            } catch (SQLException throwables) {
+//                throwables.printStackTrace();
+//            }
+//        }
     }
 }
