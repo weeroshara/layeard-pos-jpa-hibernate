@@ -13,7 +13,7 @@ public class AppInitializer extends Application {
 
     public static void main(String[] args) {
         launch(args);
-        JpaUtil.getEntityManagerFactory().close();
+//        JpaUtil.getEntityManagerFactory().close();
 //        try {
 //            DBConnection.getInstance().getConnection().close();
 //        } catch (SQLException e) {

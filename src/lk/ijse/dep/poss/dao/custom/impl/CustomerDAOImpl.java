@@ -34,7 +34,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 //            throwables.printStackTrace();
 //            return null;
 //        }
-        return (String) entityManager.createNativeQuery("SELECT c.customerId FROM Customer c ORDER BY c.customerId DESC LIMIT 1").getSingleResult();
+        return (String) entityManager.createNativeQuery("SELECT c.customerId FROM Customer c ORDER BY c.customerId DESC LIMIT 1",Customer.class).getSingleResult();
 
     }
 
@@ -56,7 +56,7 @@ public class CustomerDAOImpl implements CustomerDAO {
             return null;
         }
 */
-        return entityManager.createQuery("SELECT c.customerId, c.customerName, c.customerAddress FROM Customer c",Customer.class).getResultList();
+        return entityManager.createNativeQuery("SELECT c.customerId, c.customerName, c.customerAddress FROM Customer c",Customer.class).getResultList();
     }
 
     @Override

@@ -1,9 +1,12 @@
 package lk.ijse.dep.poss.dao;
 
+import lk.ijse.dep.poss.db.JpaUtil;
+import lk.ijse.dep.poss.entity.Customer;
 import lk.ijse.dep.poss.entity.Item;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public class HibernateTest {
@@ -26,6 +29,17 @@ public class HibernateTest {
 //
 //        transaction.commit();
 //        session.close();
+
+        EntityManager entityManager = JpaUtil.getEntityManagerFactory().createEntityManager();
+        entityManager.getTransaction().begin();
+
+//        List resultList = entityManager.createNativeQuery("SELECT c.customerId, c.customerName, c.customerAddress FROM Customer c", Customer.class).getResultList();
+//        for (Object o : resultList) {
+//            System.out.println(o);
+//        }
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
 
     }
 
